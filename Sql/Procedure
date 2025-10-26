@@ -1,0 +1,22 @@
+--процедура для обновления данных за пред 5 дней
+
+CREATE procedure work
+as
+begin
+	declare		@data as date
+	set			@data = dateadd (day, -5, cast (getdate() as date))	
+	--------------------------------------------------------------------------------------------------------------
+	--затираем данные за предыдущие 5 дней
+	delete from m_report where report_date >= @data
+	--------------------------------------------------------------------------------------------------------------
+	--добавляем данные за предыдущие 5 дней
+	if			object_id('tempdb..#m_report') is not null drop table #m_report
+	select		id
+				,date_f
+				,emp_id 
+	into		#m_report
+	from		history_table
+	where		num_f in (21, 115, 119) 
+				and cast (date_f as date) >= @data
+end
+go
